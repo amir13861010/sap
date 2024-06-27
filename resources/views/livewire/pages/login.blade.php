@@ -1,5 +1,5 @@
 <div class="flex items-center min-h-screen bg-gray-50">
-    <div class="flex-1 h-full max-w-4xl mx-auto bg-white rounded-lg shadow-xl">
+    <div class="flex-1 h-[95vh] max-w-4xl mx-auto bg-white rounded-lg shadow-xl">
         <div class="flex flex-col md:flex-row">
             <div class="flex items-center justify-center p-5 sm:p-12 md:w-1/2">
                 <form wire:submit.prevent="login" class="w-full">
@@ -68,7 +68,7 @@
             </div>
             <div class="flex-1 text-center hidden lg:flex">
                 <div class="h-30 md:h-auto md:w-2/2 relative">
-                    <img class="object-cover w-full h-full" src="images/side.png" alt="img" />
+                    <img class="object-cover w-full h-[95vh]" src="images/side.png" alt="img" />
                     <div class="absolute bottom-0 left-0 mt-7 w-full px-6 pb-6 bg-gray-900 bg-opacity-75 text-white">
                         <span class="text-xl font-bold">This is your </span><span class="text-xl font-bold" id="dynamic-text"></span>
                     </div>
@@ -77,51 +77,53 @@
         </div>
     </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const dynamicTextElement = document.getElementById("dynamic-text");
-        const words = ["map", "travel", "voice", "story", "life", "advertise", "social"];
-        let currentIndex = 0;
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const dynamicTextElement = document.getElementById("dynamic-text");
+            const words = ["map", "travel", "voice", "story", "life", "advertise", "social"];
+            let currentIndex = 0;
 
-        function typeWord() {
-            const currentWord = words[currentIndex];
-            let currentWordIndex = 0;
-            const typingInterval = setInterval(() => {
-                dynamicTextElement.textContent = currentWord.substring(0, currentWordIndex + 1);
-                currentWordIndex++;
-                if (currentWordIndex === currentWord.length) {
-                    clearInterval(typingInterval);
-                    setTimeout(eraseWord, 1000);
-                }
-            }, 200);
+            function typeWord() {
+                const currentWord = words[currentIndex];
+                let currentWordIndex = 0;
+                const typingInterval = setInterval(() => {
+                    dynamicTextElement.textContent = currentWord.substring(0, currentWordIndex + 1);
+                    currentWordIndex++;
+                    if (currentWordIndex === currentWord.length) {
+                        clearInterval(typingInterval);
+                        setTimeout(eraseWord, 1000);
+                    }
+                }, 200);
 
-            currentIndex = (currentIndex + 1) % words.length;
+                currentIndex = (currentIndex + 1) % words.length;
+            }
+
+            function eraseWord() {
+                let currentText = dynamicTextElement.textContent;
+                const erasingInterval = setInterval(() => {
+                    dynamicTextElement.textContent = currentText.substring(0, currentText.length - 1);
+                    currentText = dynamicTextElement.textContent;
+                    if (currentText === "") {
+                        clearInterval(erasingInterval);
+                        setTimeout(typeWord, 500);
+                    }
+                }, 100);
+            }
+
+            // Start the typing effect
+            typeWord();
+        });
+
+        function togglePasswordVisibility(inputId, button) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                button.innerHTML = '<i class="mt-5 far fa-eye-slash"></i>';
+            } else {
+                input.type = "password";
+                button.innerHTML = '<i class="mt-5 far fa-eye"></i>';
+            }
         }
 
-        function eraseWord() {
-            let currentText = dynamicTextElement.textContent;
-            const erasingInterval = setInterval(() => {
-                dynamicTextElement.textContent = currentText.substring(0, currentText.length - 1);
-                currentText = dynamicTextElement.textContent;
-                if (currentText === "") {
-                    clearInterval(erasingInterval);
-                    setTimeout(typeWord, 500);
-                }
-            }, 100);
-        }
-
-        // Start the typing effect
-        typeWord();
-    });
-    function togglePasswordVisibility(inputId, button) {
-        const input = document.getElementById(inputId);
-        if (input.type === "password") {
-            input.type = "text";
-            button.innerHTML = '<i class="mt-5 far fa-eye-slash"></i>';
-        } else {
-            input.type = "password";
-            button.innerHTML = '<i class="mt-5 far fa-eye"></i>';
-        }
-    }
-</script>
+    </script>
 </div>

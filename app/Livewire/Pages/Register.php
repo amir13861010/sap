@@ -5,8 +5,10 @@ namespace App\Livewire\Pages;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Laravel\Socialite\Facades\Socialite;
 use Livewire\Component;
 
 class Register extends Component
@@ -55,7 +57,7 @@ class Register extends Component
             flash()->addSuccess('Registration was successful');
             Auth::login($this->user);
         } catch (Exception $e) {
-            Log::error($e->getMessage() . " register Error");
+            Log::error($e->getMessage());
             flash()->addError('There was a problem with your registration.');
         }
     }
@@ -90,6 +92,59 @@ class Register extends Component
             $this->sent_verification_code = null; // Invalidate the verification code
         }
     }
+
+    public function redirectGoogle()
+    {
+        try {
+            return Socialite::driver('google')->redirect();
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            flash()->addError('There was a problem with your registration.');
+            return redirect()->back();
+        }
+    }
+
+    public function callback()
+    {
+        try {
+            dd(Socialite::driver('google')->stateless()->user());
+            $user = Socialite::driver('google')->user();
+            $existingUser = User::where('email', $user->email)->first();
+            if (!$existingUser) {
+                $newUser = User::create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'password' => Hash::make('password'),
+                    ]);
+                auth()->login($newUser);
+            } else {
+                auth()->login($existingUser);
+            }
+
+            flash()->addSuccess('registration successfully.');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            flash()->addError('There was a problem with your registration.');
+            return redirect()->back();
+        }
+    }
+
+    public function redirectFaceBook()
+    {
+        try {
+            return Socialite::driver('facebook')->redirect();
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            flash()->addError('There was a problem with your registration.');
+            return redirect()->back();
+        }
+    }
+
+    public function callbackFaceBook()
+    {
+
+    }
+
     public function render()
     {
         return view('livewire.pages.register');
