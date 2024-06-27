@@ -25,6 +25,9 @@ Route::get('/testroute', function () {
     Mail::to('4amir.amro@gmail.com')->send(new \App\Mail\VerificationCodeMail($code));
 });
 
+Route::get('test', function () {
+    dd('hi');
+})->middleware('admin');
 Route::group(['prefix' => 'google'], function () {
     Route::get('', [Register::class, 'redirectGoogle'])->name('google');
     Route::get('callback', [Register::class,'callback']);
