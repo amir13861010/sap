@@ -56,7 +56,6 @@ class Register extends Component
             Auth::login($this->user);
         } catch (Exception $e) {
             Log::error($e->getMessage() . " register Error");
-
             flash()->addError('There was a problem with your registration.');
         }
     }

@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', \App\Livewire\Pages\Register::class);
 Route::get('/login', \App\Livewire\Pages\Login::class);
-Route::get('/map', \App\Livewire\Pages\Map::class);
 Route::get('/testroute', function() {
     $code = "Funny Coder";
 
