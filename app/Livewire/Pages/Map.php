@@ -12,6 +12,7 @@ class Map extends Component
     public $latitude;
     public $longitude;
     public $audio;
+    public $voiceRecords; // To hold fetched voice records
 
     protected $listeners = ['setLatitudeLongitudeAndAudio'];
 
@@ -22,7 +23,15 @@ class Map extends Component
         $this->audio = $audioPath;
         $this->save();
     }
+    public function mount()
+    {
+        $this->voiceRecords = VoiceRecord::all(); // Fetch all voice records from the database
+    }
 
+    public function showEror()
+    {
+        dd("hi");
+    }
     public function save()
     {
         $this->validate([

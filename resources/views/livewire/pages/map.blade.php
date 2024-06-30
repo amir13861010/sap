@@ -280,6 +280,20 @@
             zoom: 16.2,
 
         });
+        const voiceRecords = @json($voiceRecords); // Pass the voice records to JavaScript
+        const MIN_ZOOM_LEVEL = 14;
+
+        voiceRecords.forEach(record => {
+            const image = document.createElement('img');
+            image.src = `{{ asset("images/Voice_show-removebg-preview.png") }}`; // Replace with your image path
+            image.width = 60; // Adjust image width as needed
+            image.height = 60; // Adjust image height as needed
+
+            const marker = new mapboxgl.Marker({ element: image })
+                .setLngLat([record.longitude, record.latitude])
+                .setPopup(new mapboxgl.Popup().setHTML(`<p>Voice Recording: <a href="${record.audio_path}" target="_blank">Play</a></p>`))
+                .addTo(map);
+        });
 
         map.on('style.load', () => {
             map.addSource('line', {
@@ -372,6 +386,10 @@
             document.getElementById('cancelButton').addEventListener('click', cancelRecording);
 
             function startRecording() {
+                if (map.getZoom() < MIN_ZOOM_LEVEL) {
+                    alert("Zoom in closer to record audio at a specific location.");
+                    return;
+                }
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                     alert("Your browser does not support audio recording");
                     return;

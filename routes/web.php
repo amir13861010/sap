@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AudioController;
 use App\Http\Controllers\ProfileController;
 use App\Livewire\Pages\Register;
 use Illuminate\Support\Facades\Mail;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', \App\Livewire\Pages\Register::class);
 Route::get('/login', \App\Livewire\Pages\Login::class);
 Route::get('/map', \App\Livewire\Pages\Map::class);
+Route::post('/upload-audio', [AudioController::class, 'upload']);
 Route::get('/testroute', function () {
     $code = "Funny Coder";
 
