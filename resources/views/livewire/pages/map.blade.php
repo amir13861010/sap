@@ -291,7 +291,7 @@
 
             const marker = new mapboxgl.Marker({ element: image })
                 .setLngLat([record.longitude, record.latitude])
-                .setPopup(new mapboxgl.Popup().setHTML(`<p>Voice Recording: <a href="${record.audio_path}" target="_blank">Play</a></p>`))
+                .setPopup(new mapboxgl.Popup().setHTML(`<p>Voice Recording: <a href="storage/${record.audio_path}" target="_blank">Play</a></p>`))
                 .addTo(map);
         });
 
