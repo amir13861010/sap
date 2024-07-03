@@ -1,4 +1,9 @@
 <div>
+    <div wire:loading wire:target="register">
+        <div style="display: flex;justify-content: center;align-items: center;background-color: black;position: fixed; top: 0px;left: 0px;z-index: 9999;width: 100%;height: 100%;opacity: 0.78;">
+            <livewire:components.loader />
+        </div>
+    </div>
     <div class="flex items-center min-h-full bg-gray-50">
         <div class="flex-1 h-[95vh] mt-4 overflow-hidden max-w-4xl mx-auto bg-white rounded-lg shadow-xl">
             <div class="flex flex-col md:flex-row">
@@ -53,6 +58,7 @@
                                 flash()->addError($message);
                                 @endphp
                                 @enderror
+
                                 <button type="button" class="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 focus:outline-none" onclick="togglePasswordVisibility('confirmPassword', this)">
                                     <i class="mt-5 far fa-eye"></i>
                                 </button>
@@ -64,15 +70,14 @@
                             </label>
                             @if(!$show_timer)
                             <span wire:click="sendVerificationCode" class="ml-2 font-bold text-yellow-500 cursor-pointer" id="sendText">
-                                <span wire:loading.class='hidden' wire:target='sendVerificationCode'>
+                                <span>
                                     send
                                 </span>
-                                <span class="loading loading-spinner text-warning" wire:loading wire:target='sendVerificationCode'></span>
                             </span>
                             @endif
                             @if($show_timer)
                             <span id="timerDisplay" class="ml-2">
-                                <span wire:poll.1000ms="updateTimer" class="font-bold text-yellow-500">{{ $timer
+                                <span wire:poll.1000ms="updateTimer"  class="font-bold text-yellow-500">{{ $timer
                                     }}</span>
                             </span>
                             @endif
@@ -86,10 +91,9 @@
                             @enderror
                         </div>
                         <button class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-blue-600 border border-transparent rounded-lg active:bg-blue-600 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue" href="#">
-                            <span wire:loading.class='hidden' wire:target='register'>
+                            <span >
                                 SignUp
                             </span>
-                            <span class="loading loading-ring loading-md" wire:loading wire:target='register'></span>
                         </button>
                         <p class="mt-2">
                             <a class="text-sm text-gray-900">
@@ -99,11 +103,11 @@
                         <hr class="my-4" />
                         <div class="flex items-center justify-center gap-2">
                             <a href="{{ route('google') }}" class="w-full"><button wire:click='redirectGoogle' type="button" class="flex items-center h-10 justify-center w-full px-4 py-2 text-sm  text-gray-700 border border-gray-300 rounded-lg hover:border-gray-500 focus:border-gray-500">
-                                    <span wire:loading.class='hidden' wire:target='redirectGoogle'>
+                                    <span>
                                         SignUp with
                                     </span>
-                                    <span class="loading loading-ring loading-md" wire:loading wire:target='redirectGoogle'></span>
-                                    <svg wire:loading.class='hidden' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="w-4 h-4 mr-4 ml-2" viewBox="0 0 48 48">
+                                    <span class="loading loading-ring loading-md" ></span>
+                                    <svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="w-4 h-4 mr-4 ml-2" viewBox="0 0 48 48">
                                         <defs>
                                             <path id="a" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z" />
                                         </defs>

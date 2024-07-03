@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
 use Livewire\Component;
 
+
 class Register extends Component
 {
     public $name;
@@ -64,7 +65,7 @@ class Register extends Component
 
     public function sendVerificationCode()
     {
-        if (!$this->email) {
+        if (is_null($this->email)) {
             flash()->addError('The email field is empty');
             return;
         }
@@ -80,6 +81,7 @@ class Register extends Component
         } catch (Exception $e) {
             Log::error($e->getMessage() . " Email sending error");
             flash()->addError('There was a problem sending the verification code.');
+            return;
         }
     }
 

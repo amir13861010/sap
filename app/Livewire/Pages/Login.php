@@ -23,7 +23,7 @@ class Login extends Component
             ]);
         }
 
-        return redirect()->intended('/dashboard');
+        return redirect()->intended('/map');
     }
 
     public function render()

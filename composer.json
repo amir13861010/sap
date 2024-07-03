@@ -10,8 +10,10 @@
         "laravel/breeze": "^1.29",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
+        "laravel/socialite": "^5.15",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.5",
+        "mailersend/laravel-driver": "*",
         "php-flasher/flasher-laravel": "^1.15"
     },
     "require-dev": {
@@ -58,7 +60,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.4.0"
+            "php": "8.1"
         },
         "optimize-autoloader": true,
         "preferred-install": "dist",

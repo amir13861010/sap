@@ -24,8 +24,10 @@ Route::post('/upload-audio', [AudioController::class, 'upload']);
 Route::get('/testroute', function () {
     $code = "Funny Coder";
 
-    // The email sending is done using the to method on the Mail facade
-    Mail::to('4amir.amro@gmail.com')->send(new \App\Mail\VerificationCodeMail($code));
+    Mail::to('4amir.amro@gmail.com')
+        ->cc('cc@domain.com')
+        ->bcc('bcc@domain.com')
+        ->send(new \App\Mail\VerificationCodeMail(245));
 });
 
 Route::group(['prefix' => 'google'], function () {
