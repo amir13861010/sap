@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', \App\Livewire\Pages\Register::class);
 Route::get('/login', \App\Livewire\Pages\Login::class);
 Route::get('/map', \App\Livewire\Pages\Map::class);
+
 Route::post('/upload-audio', [AudioController::class, 'upload']);
 Route::get('/testroute', function () {
     $code = "Funny Coder";
@@ -28,6 +29,10 @@ Route::get('/testroute', function () {
         ->cc('cc@domain.com')
         ->bcc('bcc@domain.com')
         ->send(new \App\Mail\VerificationCodeMail(245));
+});
+Route::middleware("admin")->group(function () {
+    Route::get('/admin', \App\Livewire\Admin\Index::class);
+    Route::get('/admin/users', \App\Livewire\Admin\Users::class);
 });
 
 Route::group(['prefix' => 'google'], function () {

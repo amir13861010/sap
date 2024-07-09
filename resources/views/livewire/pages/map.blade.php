@@ -156,7 +156,33 @@
         .map-button.selected path {
             stroke: #fff;
         }
+        .bottom-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
 
+        .icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .icon img {
+            width: 24px;
+            height: 24px;
+        }
 
     </style>
 
@@ -268,7 +294,21 @@
             Uploading... <!-- Add loading indicator or progress bar here -->
         </div>
     </form>
+    <div class="bottom-controls">
+        <div class="icon" id="voice-icon">
+            <i class="fa-solid fa-microphone" id="voice-record-icon" draggable="true"></i>
+        </div>
 
+        <div class="icon" id="playlist-icon">
+            <i class="fa-solid fa-quote-left"></i>
+        </div>
+        <div class="icon" id="mention-icon">
+            <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <div class="icon" id="success-location">
+            <i class="fa-solid fa-location-crosshairs"></i>
+        </div>
+    </div>
 
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2FwLXVzZXIiLCJhIjoiY2x1NWRwdzR5MXBubTJrcXN6M24yN2piZyJ9.mAmcP0Tigjh8OMQSlyAFJg';
@@ -278,8 +318,8 @@
             projection: 'globe',
             center: [2.293506, 48.859605],
             zoom: 16.2,
-
         });
+
         const voiceRecords = @json($voiceRecords); // Pass the voice records to JavaScript
         const MIN_ZOOM_LEVEL = 14;
 
@@ -329,6 +369,7 @@
                 }
             });
         });
+
         document.querySelectorAll('.map-button').forEach(button => {
             button.addEventListener('click', () => {
                 // Remove 'selected' class from all buttons
@@ -375,8 +416,30 @@
             let audioChunks = [];
             let audioBlob;
             let audioUrl;
+            let recordMarker = null;
+            let isRecording = false;
+            document.getElementById('success-location').addEventListener('click', () => {
+                // Check if geolocation is supported
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        // Get the current coordinates
+                        const { latitude, longitude } = position.coords;
 
+                        // Fly to the user's current location on the map
+                        map.flyTo({
+                            center: [longitude, latitude], // Set the map center to user's current location
+                            essential: true // Ensure it's a smooth animation
+                        });
+                    }, (error) => {
+                        console.error('Error getting current location:', error);
+                        alert('Failed to get current location. Please try again.');
+                    });
+                } else {
+                    alert('Geolocation is not supported by your browser.');
+                }
+            });
 
+            // Recording control buttons
             document.getElementById('recordButton').addEventListener('click', startRecording);
             document.getElementById('stopButton').addEventListener('click', stopRecording);
             document.getElementById('pauseButton').addEventListener('click', pauseRecording);
@@ -384,6 +447,33 @@
             document.getElementById('playButton').addEventListener('click', playRecording);
             document.getElementById('uploadButton').addEventListener('click', uploadRecording);
             document.getElementById('cancelButton').addEventListener('click', cancelRecording);
+
+            const voiceRecordIcon = document.getElementById('voice-record-icon');
+
+            voiceRecordIcon.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', null);
+            });
+
+            map.on('dragover', (e) => {
+                e.preventDefault();
+            });
+
+            map.on('drop', (e) => {
+                e.preventDefault();
+                const coordinates = e.lngLat;
+
+                if (recordMarker) {
+                    recordMarker.remove();
+                }
+
+                recordMarker = new mapboxgl.Marker()
+                    .setLngLat([coordinates.lng, coordinates.lat])
+                    .addTo(map);
+
+                if (!isRecording) {
+                    startRecording();
+                }
+            });
 
             function startRecording() {
                 if (map.getZoom() < MIN_ZOOM_LEVEL) {
@@ -395,7 +485,7 @@
                     return;
                 }
 
-                navigator.mediaDevices.getUserMedia({audio: true})
+                navigator.mediaDevices.getUserMedia({ audio: true })
                     .then(stream => {
                         mediaRecorder = new MediaRecorder(stream);
                         audioChunks = [];
@@ -406,7 +496,6 @@
 
                         mediaRecorder.addEventListener("stop", () => {
                             audioBlob = new Blob(audioChunks);
-                            audioFile = new File([audioBlob], "recording.wav", {type: "audio/wav"});
                             audioUrl = URL.createObjectURL(audioBlob);
                             audio = new Audio(audioUrl);
                             toggleButtons(false, true);
@@ -441,7 +530,7 @@
 
             function uploadRecording() {
                 const formData = new FormData();
-                formData.append('file', audioFile);
+                formData.append('file', audioBlob, "recording.wav");
                 formData.append('_token', '{{ csrf_token() }}');
 
                 fetch('/upload-audio', {
@@ -451,7 +540,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                        @this.call('setLatitudeLongitudeAndAudio', toolboxCoordinates.lat, toolboxCoordinates.lng, data.filePath);
+                        @this.call('setLatitudeLongitudeAndAudio', recordMarker.getLngLat().lat, recordMarker.getLngLat().lng, data.filePath);
                         } else {
                             alert('Failed to upload audio');
                         }
@@ -461,7 +550,6 @@
             function cancelRecording() {
                 audioChunks = [];
                 audioBlob = null;
-                audioFile = null;
                 audioUrl = null;
                 audio = null;
                 toggleButtons(false);
@@ -476,13 +564,6 @@
                 document.getElementById('uploadButton').style.display = hasRecording ? 'block' : 'none';
                 document.getElementById('cancelButton').style.display = hasRecording ? 'block' : 'none';
             }
-
-            map.on('move', function () {
-                if (toolboxCoordinates) {
-
-                    showToolbox(toolboxCoordinates);
-                }
-            });
         });
     </script>
 
