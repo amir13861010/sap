@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\ProfileController;
+use App\Livewire\Admin\Index;
+use App\Livewire\Admin\Users;
 use App\Livewire\Pages\Register;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
@@ -31,8 +33,8 @@ Route::get('/testroute', function () {
         ->send(new \App\Mail\VerificationCodeMail(245));
 });
 Route::middleware("admin")->group(function () {
-    Route::get('/admin', \App\Livewire\Admin\Index::class);
-    Route::get('/admin/users', \App\Livewire\Admin\Users::class);
+    Route::get('/admin', Index::class);
+    Route::get('/admin/users', Users::class)->name('admin.users');
 });
 
 Route::group(['prefix' => 'google'], function () {
