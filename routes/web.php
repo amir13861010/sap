@@ -4,7 +4,10 @@ use App\Http\Controllers\AudioController;
 use App\Http\Controllers\ProfileController;
 use App\Livewire\Admin\Index;
 use App\Livewire\Admin\Users;
+use App\Livewire\Pages\Login;
+use App\Livewire\Pages\Map;
 use App\Livewire\Pages\Register;
+use App\Mail\VerificationCodeMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
@@ -18,10 +21,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-Route::get('/', \App\Livewire\Pages\Register::class);
-Route::get('/login', \App\Livewire\Pages\Login::class);
-Route::get('/map', \App\Livewire\Pages\Map::class);
+Route::group([], function () {
+    Route::get('/', Register::class);
+    Route::get('/login', Login::class);
+    Route::get('/map', Map::class);
+});
 
 Route::post('/upload-audio', [AudioController::class, 'upload']);
 Route::get('/testroute', function () {
@@ -30,7 +34,7 @@ Route::get('/testroute', function () {
     Mail::to('4amir.amro@gmail.com')
         ->cc('cc@domain.com')
         ->bcc('bcc@domain.com')
-        ->send(new \App\Mail\VerificationCodeMail(245));
+        ->send(new VerificationCodeMail(245));
 });
 Route::middleware("admin")->group(function () {
     Route::get('/admin', Index::class);
